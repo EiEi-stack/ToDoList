@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
             ic_logo.startAnimation(AnimationUtils.loadAnimation(this,R.anim.splash_out))
             handler.postDelayed({},500)
             ic_logo.visibility = View.GONE
-            val intent = Intent(this, DashboardActivity::class.java)
+            val intent = Intent(this, DashBoardActivity::class.java)
             startActivity(intent)
             finish()
         },1500)
