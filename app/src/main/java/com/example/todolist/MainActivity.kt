@@ -15,16 +15,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        ic_logo.startAnimation(AnimationUtils.loadAnimation(this,R.anim.splash_in))
+        ic_logo.startAnimation(AnimationUtils.loadAnimation(this, R.anim.splash_in))
         handler.postDelayed({
-            ic_logo.startAnimation(AnimationUtils.loadAnimation(this,R.anim.splash_out))
-            handler.postDelayed({},500)
+            ic_logo.startAnimation(AnimationUtils.loadAnimation(this, R.anim.splash_out))
+            handler.postDelayed({}, 500)
             ic_logo.visibility = View.GONE
             val intent = Intent(this, DashBoardActivity::class.java)
             startActivity(intent)
             finish()
-        },1500)
+        }, 1500)
     }
 
-    }
+}
 

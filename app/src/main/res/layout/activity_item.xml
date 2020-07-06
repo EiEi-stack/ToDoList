@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".DashBoardActivity">
+    android:layout_height="match_parent">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/item_toolbar"
         android:layout_width="match_parent"
@@ -13,10 +12,10 @@
         android:background="@color/colorPrimaryDark" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/dashboard_toolbar"
+        android:layout_below="@+id/item_toolbar"
         android:id="@+id/rv_item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_item"

@@ -1,9 +1,9 @@
 package com.example.todolist.DTO
 
-class ToDoItem(){
+class ToDoItem() {
 
-    var id : Long = -1
-    var toDoId : Long = -1
+    var id: Long = -1
+    var toDoId: Long = -1
     var itemName = ""
     var isCompleted = false
 
