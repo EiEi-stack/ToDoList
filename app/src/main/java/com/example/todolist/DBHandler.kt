@@ -2,6 +2,7 @@ package com.example.todolist
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.LocusId
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.core.database.getIntOrNull
@@ -38,11 +39,12 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         return result != (-1).toLong()
 
     }
+
     fun updateToDo(toDo: ToDo) {
         val db = writableDatabase
         val cv = ContentValues()
         cv.put(COL_NAME, toDo.name)
-        db.update(TABLE_TODO,cv,"$COL_ID=?", arrayOf(toDo.id.toString()))
+        db.update(TABLE_TODO, cv, "$COL_ID=?", arrayOf(toDo.id.toString()))
 
     }
 
@@ -134,5 +136,10 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         db.update(TABLE_TODO_ITEM, cv, "$COL_ID=?", arrayOf(item.id.toString()))
 
 
+    }
+
+    fun deleteToDoItem(itemId: Long) {
+        val db = writableDatabase
+        db.delete(TABLE_TODO_ITEM, "$COL_ID=?", arrayOf(itemId.toString()))
     }
 }

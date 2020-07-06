@@ -50,7 +50,8 @@ class DashBoardActivity : AppCompatActivity() {
             dialog.show()
         }
     }
-    fun updateToDo(toDo: ToDo){
+
+    fun updateToDo(toDo: ToDo) {
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("Update ToDo")
         val view: View = layoutInflater.inflate(R.layout.dialog_dashboard, null)
@@ -110,14 +111,22 @@ class DashBoardActivity : AppCompatActivity() {
                             activity.updateToDo(list[p1])
                         }
                         R.id.menu_delete -> {
-                            activity.dbHandler.deleteToDo(list[p1].id)
-                            activity.refreshList()
+                            val dialog = AlertDialog.Builder(activity)
+                            dialog.setTitle("Confirm")
+                            dialog.setMessage("Do you want to delete this task?")
+                            dialog.setPositiveButton("Continue") { _: DialogInterface?, _: Int ->
+                                activity.dbHandler.deleteToDo(list[p1].id)
+                                activity.refreshList()
+                            }
+                            dialog.setNegativeButton("Cancel") { _: DialogInterface?, _: Int ->
+                            }
+                            dialog.show()
                         }
                         R.id.menu_mark_as_completed -> {
-                            activity.dbHandler.updateToDOItemCompletedStatus(list[p1].id,true)
+                            activity.dbHandler.updateToDOItemCompletedStatus(list[p1].id, true)
                         }
                         R.id.menu_reset -> {
-                            activity.dbHandler.updateToDOItemCompletedStatus(list[p1].id,false)
+                            activity.dbHandler.updateToDOItemCompletedStatus(list[p1].id, false)
 
                         }
                     }
