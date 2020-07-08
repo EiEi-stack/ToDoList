@@ -1,22 +1,22 @@
 package com.example.todolist
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.DTO.ToDo
 import kotlinx.android.synthetic.main.activity_dash_board.*
+import java.util.*
 
 class DashBoardActivity : AppCompatActivity() {
 
@@ -35,6 +35,30 @@ class DashBoardActivity : AppCompatActivity() {
             dialog.setTitle("Add ToDo")
             val view: View = layoutInflater.inflate(R.layout.dialog_dashboard, null)
             val toDoName = view.findViewById<EditText>(R.id.ev_todo)
+            val pickerDate = view.findViewById<DatePicker>(R.id.pickerdate)
+            val pickerTime = view.findViewById<TimePicker>(R.id.pickertime)
+            val buttonSetAlarm = view.findViewById<Button>(R.id.setalarm)
+            val now = Calendar.getInstance()
+            pickerDate.init(
+                now[Calendar.YEAR],
+                now[Calendar.MONTH],
+                now[Calendar.DAY_OF_MONTH],
+                null
+            )
+            buttonSetAlarm.setOnClickListener{
+                val current = Calendar.getInstance()
+                val cal = Calendar.getInstance()
+                cal[pickerDate.year, pickerDate.month, pickerDate.dayOfMonth, pickerTime.currentHour, pickerTime.currentMinute] =
+                    0
+
+                if (cal.compareTo(current) <= 0) {
+                    //The set Date/Time is already passed
+                    Toast.makeText(applicationContext, "Invalid DateTime", Toast.LENGTH_LONG)
+                        .show()
+                } else {
+                    setAlarm(cal)
+                }
+            }
             dialog.setView(view)
             dialog.setPositiveButton("Add") { _: DialogInterface, _: Int ->
                 if (toDoName.text.isNotEmpty()) {
@@ -69,6 +93,16 @@ class DashBoardActivity : AppCompatActivity() {
 
         }
         dialog.show()
+    }
+
+    fun setAlarm(targetCal :Calendar){
+        val intent = Intent(baseContext, AlarmReceiver::class.java)
+        val pendingIntent =
+            PendingIntent.getBroadcast(baseContext, 0, intent, 0)
+        val alarmManager =
+            getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager[AlarmManager.RTC_WAKEUP, targetCal.timeInMillis] = pendingIntent
+        Toast.makeText(this, "tii;;; inside", Toast.LENGTH_LONG).show()
     }
 
     override fun onResume() {
