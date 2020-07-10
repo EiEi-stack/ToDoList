@@ -12,24 +12,38 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.DTO.ToDo
+import com.example.todolist.DTO.ToDoItem
 import kotlinx.android.synthetic.main.activity_dash_board.*
 import java.util.*
 
 class DashBoardActivity : AppCompatActivity() {
-
+    lateinit var alarmCalendar: Calendar
     lateinit var dbHandler: DBHandler
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board)
 
         setSupportActionBar(dashboard_toolbar)
+        alarmCalendar = Calendar.getInstance()
         title = "Dashboard"
         dbHandler = DBHandler(this)
         rv_dashboard.layoutManager = LinearLayoutManager(this)
 
+        // ListViewを作成
+        val arrayAdapter: ArrayAdapter<*>
+        val users = CompletedList()
+        val mlist = findViewById<ListView>(R.id.lv_completedTask)
+        val listItems = arrayOfNulls<String>(users.size)
+        for (i in 0 until users.size) {
+            val listData = users[i]
+            listItems[i] = listData.itemName
+        }
+        arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, listItems)
+        mlist.adapter = arrayAdapter
         fab_dashboard.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
             dialog.setTitle("Add ToDo")
@@ -45,7 +59,7 @@ class DashBoardActivity : AppCompatActivity() {
                 now[Calendar.DAY_OF_MONTH],
                 null
             )
-            buttonSetAlarm.setOnClickListener{
+            buttonSetAlarm.setOnClickListener {
                 val current = Calendar.getInstance()
                 val cal = Calendar.getInstance()
                 cal[pickerDate.year, pickerDate.month, pickerDate.dayOfMonth, pickerTime.currentHour, pickerTime.currentMinute] =
@@ -64,6 +78,11 @@ class DashBoardActivity : AppCompatActivity() {
                 if (toDoName.text.isNotEmpty()) {
                     val toDo = ToDo()
                     toDo.name = toDoName.text.toString()
+                    val alarmTime = alarmCalendar.get(Calendar.HOUR_OF_DAY)
+                        .toString() + ":" + alarmCalendar.get(Calendar.MINUTE).toString()
+                    Toast.makeText(applicationContext, "Alarm :" + alarmTime, Toast.LENGTH_LONG)
+                        .show()
+                    toDo.toDoAlarm = alarmTime
                     dbHandler.addToDo(toDo)
                     refreshList()
                 }
@@ -95,14 +114,15 @@ class DashBoardActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun setAlarm(targetCal :Calendar){
+    fun setAlarm(targetCal: Calendar) {
         val intent = Intent(baseContext, AlarmReceiver::class.java)
         val pendingIntent =
             PendingIntent.getBroadcast(baseContext, 0, intent, 0)
         val alarmManager =
             getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.RTC_WAKEUP, targetCal.timeInMillis] = pendingIntent
-        Toast.makeText(this, "tii;;; inside", Toast.LENGTH_LONG).show()
+        alarmCalendar = targetCal
+        Toast.makeText(this, "Alaram setting completed", Toast.LENGTH_LONG).show()
     }
 
     override fun onResume() {
@@ -113,6 +133,12 @@ class DashBoardActivity : AppCompatActivity() {
     private fun refreshList() {
         rv_dashboard.adapter = DashboardAdapter(this, dbHandler.getToDo())
     }
+
+    fun CompletedList(): MutableList<ToDoItem> {
+        var listA = dbHandler.getToDoItemsCompleted()
+        return listA
+    }
+
 
     class DashboardAdapter(val activity: DashBoardActivity, val list: MutableList<ToDo>) :
         RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
@@ -128,6 +154,7 @@ class DashBoardActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, p1: Int) {
             holder.toDoName.text = list[p1].name
+            holder.todoAlarm.text = list[p1].toDoAlarm
 
 
             holder.toDoName.setOnClickListener {
@@ -172,6 +199,7 @@ class DashBoardActivity : AppCompatActivity() {
 
         class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val toDoName: TextView = v.findViewById(R.id.tv_todo_name)
+            val todoAlarm: TextView = v.findViewById(R.id.tv_todo_alarm)
             val menu: ImageView = v.findViewById(R.id.iv_menu)
         }
     }
