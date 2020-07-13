@@ -19,13 +19,22 @@
         android:padding="8dp"
         android:src="@drawable/ic_edit_black_24dp" />
 
+    <TextView
+        android:id="@+id/tv_todo_item_alarm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_edit"
+        android:layout_toLeftOf="@id/iv_delete"
+        android:padding="8dp"
+        android:text="@string/timedefault" />
+
     <ImageView
         android:id="@+id/iv_delete"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:padding="8dp"
         android:layout_toStartOf="@id/iv_move"
         android:layout_toLeftOf="@id/iv_move"
+        android:padding="8dp"
         android:src="@drawable/ic_delete_black_24dp" />
 
     <ImageView
@@ -36,5 +45,11 @@
         android:layout_alignParentRight="true"
         android:padding="8dp"
         android:src="@drawable/ic_drag_handle_black_24dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/tv_todo_item_alarm"
+        android:background="@color/colorPrimaryDark" />
 
 </RelativeLayout>

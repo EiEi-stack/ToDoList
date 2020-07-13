@@ -5,4 +5,6 @@
     <string name="mark_as_completed">Mark as completed</string>
     <string name="reset">Reset</string>
     <string name="completedTask">Completed Task</string>
+    <string name="timedefault">00:00</string>
+    <string name="strike_line"> <strike>This line is strike throughed</strike></string>
 </resources>

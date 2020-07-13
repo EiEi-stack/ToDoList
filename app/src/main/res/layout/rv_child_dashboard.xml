@@ -10,25 +10,27 @@
         android:layout_toStartOf="@id/iv_menu"
         android:layout_toLeftOf="@id/iv_menu"
         android:padding="16dp" />
+
     <TextView
         android:id="@+id/tv_todo_alarm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_todo_name"
         android:layout_toLeftOf="@id/iv_menu"
-        android:text="00:00"
-        android:padding="16dp" />
+        android:padding="16dp"
+        android:text="00:00" />
 
     <ImageView
         android:id="@+id/iv_menu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_more_vert_black_24dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@+id/tv_todo_alarm"
-        android:background="@color/colorPrimaryDark"/>
+        android:background="@color/colorPrimaryDark" />
 </RelativeLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:Android="http://schemas.android.com/apk/res/android"
+    Android:id="@+id/text1"
+    Android:layout_width="fill_parent"
+    Android:layout_height="wrap_content"
+    Android:foreground="@drawable/strikethrough_foreground"
+    Android:paddingTop="2dip"
+    Android:paddingBottom="2dip" />
