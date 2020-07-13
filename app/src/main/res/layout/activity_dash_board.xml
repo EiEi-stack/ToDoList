@@ -9,6 +9,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/dashboard_toolbar"
         android:layout_width="match_parent"
+        app:title="@string/ab_dashboard"
         android:layout_height="?android:actionBarSize"
         android:background="@color/colorPrimaryDark"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />

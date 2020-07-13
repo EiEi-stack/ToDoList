@@ -12,6 +12,6 @@ class ToDoItem() {
     var toDoItemAlarmMinutes = ""
     var toDoItemAlarmTimeInterval = ""
     var isCompleted = false
-    var deletedFlag = false
+    var isDeleted = false
 
 }

@@ -13,4 +13,11 @@
     <item
         android:id="@+id/menu_reset"
         android:title="@string/reset" />
+    <item
+        android:id="@+id/menu_eng"
+        android:title="@string/english" />
+
+    <item
+        android:id="@+id/menu_jp"
+        android:title="@string/japanese" />
 </menu>

@@ -20,7 +20,8 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                 "$COL_TODO_CALENDAR_YEAR varchar," +
                 "$COL_TODO_ALARM_HOUR," +
                 "$COL_TODO_ALARM_MINUTE," +
-                "$COL_TODO_ALARM_TIME_INTERVAL);"
+                "$COL_TODO_ALARM_TIME_INTERVAL," +
+                "$COL_IS_DELETED integer);"
         val createToDoItemTable =
             "CREATE TABLE $TABLE_TODO_ITEM (" +
                     "$COL_ID integer PRIMARY KEY AUTOINCREMENT," +
@@ -34,7 +35,8 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                     "$COL_TODO_ITEM_CALENDAR_YEAR varchar," +
                     "$COL_TODO_ITEM_ALARM_HOUR varchar," +
                     "$COL_TODO_ITEM_ALARM_MINUTE varchar" +
-                    "$COL_TODO_ITEM_ALARM_TIME_INTERVAL varchar);"
+                    "$COL_TODO_ITEM_ALARM_TIME_INTERVAL varchar," +
+                    "$COL_IS_DELETED integer);"
 
         db.execSQL(createToDoTable)
         db.execSQL(createToDoItemTable)
@@ -75,6 +77,45 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         val db = writableDatabase
         db.delete(TABLE_TODO_ITEM, "$COL_TODO_ID=?", arrayOf(todoId.toString()))
         db.delete(TABLE_TODO, "$COL_ID=?", arrayOf(todoId.toString()))
+//        deleteToDoItem(todoId)
+//        val queryResult =
+//            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$todoId", null)
+//
+//        if (queryResult.moveToFirst()) {
+//            do {
+//                val todo = ToDo()
+//                todo.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
+//                todo.name = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
+//                todo.toDoAlarmHour = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ALARM_HOUR
+//                    )
+//                )
+//                todo.toDoAlarmMinutes = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ALARM_MINUTE
+//                    )
+//                )
+//                todo.toDoCalendarYear = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_CALENDAR_YEAR
+//                    )
+//                )
+//                todo.toDoCalendarMonth = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_CALENDAR_MONTH
+//                    )
+//                )
+//                todo.toDoCalendarDay = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_CALENDAR_DAY
+//                    )
+//                )
+//                todo.isDeleted = true
+//                updateToDo(todo)
+//            } while (queryResult.moveToNext())
+//        }
+//        queryResult.close()
     }
 
     fun updateToDOItemCompletedStatus(todoId: Long, isCompleted: Boolean) {
@@ -271,5 +312,50 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
     fun deleteToDoItem(itemId: Long) {
         val db = writableDatabase
         db.delete(TABLE_TODO_ITEM, "$COL_ID=?", arrayOf(itemId.toString()))
+//        val queryResult =
+//            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$itemId", null)
+//
+//        if (queryResult.moveToFirst()) {
+//            do {
+//                val item = ToDoItem()
+//                item.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
+//                item.toDoId = queryResult.getLong(queryResult.getColumnIndex(COL_TODO_ID))
+//                item.itemName = queryResult.getString(queryResult.getColumnIndex(COL_ITEM_NAME))
+//                item.toDoItemAlarmHour = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ITEM_ALARM_HOUR
+//                    )
+//                )
+//                item.toDoItemAlarmMinutes = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ITEM_ALARM_MINUTE
+//                    )
+//                )
+//                item.toDoItemCalendarYear = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ITEM_CALENDAR_YEAR
+//                    )
+//                )
+//                item.toDoItemCalendarMonth = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ITEM_CALENDAR_MONTH
+//                    )
+//                )
+//                item.toDoItemCalendarDay = queryResult.getString(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ITEM_CALENDAR_DAY
+//                    )
+//                )
+//                item.isCompleted = queryResult.getInt(
+//                    queryResult.getColumnIndex(
+//                        COL_TODO_ITEM_CALENDAR_DAY
+//                    )
+//                ) == 1
+//                item.isDeleted = true
+//                updateToDoItem(item)
+//            } while (queryResult.moveToNext())
+//        }
+//
+//        queryResult.close()
     }
 }

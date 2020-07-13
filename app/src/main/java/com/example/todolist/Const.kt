@@ -12,6 +12,7 @@ const val COL_TODO_CALENDAR_YEAR = "toDoCalendarYear"
 const val COL_TODO_ALARM_HOUR = "toDoAlarmHour"
 const val COL_TODO_ALARM_MINUTE = "toDoAlarmMinutes"
 const val COL_TODO_ALARM_TIME_INTERVAL = "toDoAlarmTimeInterval"
+const val COL_IS_DELETED ="isDeleted"
 
 const val TABLE_TODO_ITEM = "ToDoItem"
 const val COL_TODO_ID = "toDoId"

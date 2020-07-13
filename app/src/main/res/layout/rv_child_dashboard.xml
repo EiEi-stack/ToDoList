@@ -18,7 +18,7 @@
         android:layout_below="@id/tv_todo_name"
         android:layout_toLeftOf="@id/iv_menu"
         android:padding="16dp"
-        android:text="00:00" />
+        android:text="@string/defaultTime" />
 
     <ImageView
         android:id="@+id/iv_menu"

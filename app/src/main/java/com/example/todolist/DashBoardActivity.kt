@@ -1,10 +1,12 @@
 package com.example.todolist
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
@@ -15,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat.recreate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.DTO.ToDo
@@ -29,12 +32,12 @@ class DashBoardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board)
 
+        loadLocate() //Call LoadLocale
+
         setSupportActionBar(dashboard_toolbar)
         alarmCalendar = Calendar.getInstance()
-        title = "Dashboard"
         dbHandler = DBHandler(this)
         rv_dashboard.layoutManager = LinearLayoutManager(this)
-
         // ListViewを作成
         val arrayAdapter: ArrayAdapter<*>
         val users = CompletedList()
@@ -169,7 +172,7 @@ class DashBoardActivity : AppCompatActivity() {
             getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.RTC_WAKEUP, targetCal.timeInMillis] = pendingIntent
         alarmCalendar = targetCal
-        Toast.makeText(this, "Alaram setting completed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Alarm setting completed", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {
@@ -185,6 +188,26 @@ class DashBoardActivity : AppCompatActivity() {
 
     private fun refreshListView() {
         dbHandler.getToDo()
+    }
+
+    private fun setLocate(Lang: String){
+        val locale = Locale(Lang)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        baseContext.resources.updateConfiguration(config,baseContext.resources.displayMetrics)
+        val editor = getSharedPreferences("Setting",Context.MODE_PRIVATE).edit()
+        editor.putString("My_Lang",Lang)
+        editor.apply()
+    }
+
+    private fun loadLocate(){
+        val sharePreferences = getSharedPreferences("Setting",Activity.MODE_PRIVATE)
+        val language = sharePreferences.getString("MY_Lang","")
+        if (language != null) {
+            setLocate(language)
+        }
+
     }
 
     fun CompletedList(): MutableList<ToDoItem> {
@@ -259,6 +282,14 @@ class DashBoardActivity : AppCompatActivity() {
                             activity.dbHandler.updateToDOItemCompletedStatus(list[p1].id, false)
 
                         }
+                        R.id.menu_eng -> {
+                            activity.setLocate("en")
+                            //recreate()
+                        }
+                        R.id.menu_jp -> {
+                            activity.setLocate("ja")
+                            //recreate()
+                        }
                     }
                     true
                 }
@@ -273,7 +304,6 @@ class DashBoardActivity : AppCompatActivity() {
         }
     }
 }
-
 
 operator fun Int.invoke(alarmHour: String) {
 

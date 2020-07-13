@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">ToDoList</string>
+    <string name="ab_dashboard">Dashboard</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="btn_setAlarm">SET ALARM</string>
     <string name="mark_as_completed">Mark as completed</string>
     <string name="reset">Reset</string>
-    <string name="completedTask">Completed Task</string>
-    <string name="timedefault">00:00</string>
-    <string name="strike_line"> <strike>This line is strike throughed</strike></string>
+    <string name="completedTask">Completed Tasks</string>
+    <string name="defaultTime">00:00</string>
+    <string name="english">English</string>
+    <string name="japanese">Japanese</string>
 </resources>

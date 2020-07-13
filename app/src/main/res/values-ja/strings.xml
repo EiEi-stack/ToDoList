@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ToDoリスト</string>
+    <string name="ab_dashboard">ダッシュボード</string>
+    <string name="edit">編集</string>
+    <string name="delete">削除</string>
+    <string name="btn_setAlarm">目覚ましを設定する</string>
+    <string name="mark_as_completed">完了としてマーク</string>
+    <string name="reset">リセット</string>
+    <string name="completedTask">完了したタスク</string>
+    <string name="defaultTime">00:00</string>
+    <string name="english">英語</string>
+    <string name="japanese">日本語</string>
+</resources>

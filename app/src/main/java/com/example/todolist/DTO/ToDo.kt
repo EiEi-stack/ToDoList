@@ -12,6 +12,6 @@ class ToDo {
     var name = ""
     var createdAt = ""
     var items: MutableList<ToDoItem> = ArrayList()
-    var deletedFlag = false
+    var isDeleted = false
 
 }
