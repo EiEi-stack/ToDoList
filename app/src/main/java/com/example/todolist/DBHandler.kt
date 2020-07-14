@@ -20,7 +20,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                 "$COL_TODO_CALENDAR_YEAR varchar," +
                 "$COL_TODO_ALARM_HOUR," +
                 "$COL_TODO_ALARM_MINUTE," +
-                "$COL_TODO_ALARM_TIME_INTERVAL," +
+                "$COL_TODO_ALARM_TIME_INTERVAL varchar," +
                 "$COL_IS_DELETED integer);"
         val createToDoItemTable =
             "CREATE TABLE $TABLE_TODO_ITEM (" +
@@ -55,6 +55,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         cv.put(COL_TODO_CALENDAR_YEAR, toDo.toDoCalendarYear)
         cv.put(COL_TODO_CALENDAR_MONTH, toDo.toDoCalendarMonth)
         cv.put(COL_TODO_CALENDAR_DAY, toDo.toDoCalendarDay)
+        cv.put(COL_IS_DELETED, toDo.isDeleted)
         val result: Long = db.insert(TABLE_TODO, null, cv)
         return result != (-1).toLong()
 
@@ -69,59 +70,34 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         cv.put(COL_TODO_CALENDAR_YEAR, toDo.toDoCalendarYear)
         cv.put(COL_TODO_CALENDAR_MONTH, toDo.toDoCalendarMonth)
         cv.put(COL_TODO_CALENDAR_DAY, toDo.toDoCalendarDay)
+        cv.put(COL_IS_DELETED, toDo.isDeleted)
         db.update(TABLE_TODO, cv, "$COL_ID=?", arrayOf(toDo.id.toString()))
 
     }
 
-    fun deleteToDo(todoId: Long) {
+    fun deleteToDo(toDo: ToDo) {
         val db = writableDatabase
-        db.delete(TABLE_TODO_ITEM, "$COL_TODO_ID=?", arrayOf(todoId.toString()))
-        db.delete(TABLE_TODO, "$COL_ID=?", arrayOf(todoId.toString()))
-//        deleteToDoItem(todoId)
-//        val queryResult =
-//            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$todoId", null)
-//
-//        if (queryResult.moveToFirst()) {
-//            do {
-//                val todo = ToDo()
-//                todo.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
-//                todo.name = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
-//                todo.toDoAlarmHour = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ALARM_HOUR
-//                    )
-//                )
-//                todo.toDoAlarmMinutes = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ALARM_MINUTE
-//                    )
-//                )
-//                todo.toDoCalendarYear = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_CALENDAR_YEAR
-//                    )
-//                )
-//                todo.toDoCalendarMonth = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_CALENDAR_MONTH
-//                    )
-//                )
-//                todo.toDoCalendarDay = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_CALENDAR_DAY
-//                    )
-//                )
-//                todo.isDeleted = true
-//                updateToDo(todo)
-//            } while (queryResult.moveToNext())
-//        }
-//        queryResult.close()
+//        db.delete(TABLE_TODO_ITEM, "$COL_TODO_ID=?", arrayOf(todoId.toString()))
+//        db.delete(TABLE_TODO, "$COL_ID=?", arrayOf(todoId.toString()))
+        // deleteToDoItem(toDo)
+        val cv = ContentValues()
+        cv.put(COL_NAME, toDo.name)
+        cv.put(COL_TODO_ALARM_HOUR, toDo.toDoAlarmHour)
+        cv.put(COL_TODO_ALARM_MINUTE, toDo.toDoAlarmMinutes)
+        cv.put(COL_TODO_CALENDAR_YEAR, toDo.toDoCalendarYear)
+        cv.put(COL_TODO_CALENDAR_MONTH, toDo.toDoCalendarMonth)
+        cv.put(COL_TODO_CALENDAR_DAY, toDo.toDoCalendarDay)
+        cv.put(COL_IS_DELETED, toDo.isDeleted)
+        db.update(TABLE_TODO, cv, "$COL_ID=?", arrayOf(toDo.id.toString()))
     }
 
     fun updateToDOItemCompletedStatus(todoId: Long, isCompleted: Boolean) {
         val db = writableDatabase
         val queryResult =
-            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$todoId", null)
+            db.rawQuery(
+                "SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$todoId AND $COL_IS_DELETED =0",
+                null
+            )
 
         if (queryResult.moveToFirst()) {
             do {
@@ -129,7 +105,33 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                 item.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
                 item.toDoId = queryResult.getLong(queryResult.getColumnIndex(COL_TODO_ID))
                 item.itemName = queryResult.getString(queryResult.getColumnIndex(COL_ITEM_NAME))
+                item.toDoItemAlarmHour = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_ITEM_ALARM_HOUR
+                    )
+                )
+                item.toDoItemAlarmMinutes = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_ITEM_ALARM_MINUTE
+                    )
+                )
+                item.toDoItemCalendarYear = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_ITEM_CALENDAR_YEAR
+                    )
+                )
+                item.toDoItemCalendarMonth = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_ITEM_CALENDAR_MONTH
+                    )
+                )
+                item.toDoItemCalendarDay = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_ITEM_CALENDAR_DAY
+                    )
+                )
                 item.isCompleted = isCompleted
+                item.isDeleted = false
                 updateToDoItem(item)
             } while (queryResult.moveToNext())
         }
@@ -140,7 +142,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
     fun getToDo(): MutableList<ToDo> {
         val result: MutableList<ToDo> = ArrayList()
         val db = readableDatabase
-        val queryResult = db.rawQuery("SELECT * from $TABLE_TODO", null)
+        val queryResult = db.rawQuery("SELECT * from $TABLE_TODO WHERE $COL_IS_DELETED=0", null)
         if (queryResult.moveToFirst()) {
             do {
                 val todo = ToDo()
@@ -171,6 +173,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                         COL_TODO_CALENDAR_DAY
                     )
                 )
+                todo.isDeleted = false
                 result.add(todo)
             } while (queryResult.moveToNext())
         }
@@ -188,6 +191,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         cv.put(COL_TODO_ITEM_CALENDAR_YEAR, item.toDoItemCalendarYear)
         cv.put(COL_TODO_ITEM_CALENDAR_MONTH, item.toDoItemCalendarMonth)
         cv.put(COL_TODO_ITEM_CALENDAR_DAY, item.toDoItemCalendarDay)
+        cv.put(COL_IS_DELETED, item.isDeleted)
         if (item.isCompleted)
             cv.put(COL_IS_COMPLETED, true)
         else
@@ -203,7 +207,10 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
 
         val db = readableDatabase
         val queryResult =
-            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$todoId", null)
+            db.rawQuery(
+                "SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$todoId AND $COL_IS_DELETED=0",
+                null
+            )
 
         if (queryResult.moveToFirst()) {
             do {
@@ -252,7 +259,10 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
 
         val db = readableDatabase
         val queryResult =
-            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_IS_COMPLETED=1", null)
+            db.rawQuery(
+                "SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_IS_COMPLETED=1 AND $COL_IS_DELETED=0",
+                null
+            )
 
         if (queryResult.moveToFirst()) {
             do {
@@ -295,6 +305,51 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         return result
     }
 
+    fun getToDoItemDeleted(): MutableList<ToDo> {
+        val result: MutableList<ToDo> = ArrayList()
+
+        val db = readableDatabase
+        val queryResult =
+            db.rawQuery("SELECT * FROM $TABLE_TODO WHERE $COL_IS_DELETED=1", null)
+
+        if (queryResult.moveToFirst()) {
+            do {
+                val todo = ToDo()
+                todo.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
+                todo.name = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
+                todo.toDoAlarmHour = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_ALARM_HOUR
+                    )
+                )
+                todo.toDoAlarmMinutes = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_ALARM_MINUTE
+                    )
+                )
+                todo.toDoCalendarYear = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_CALENDAR_YEAR
+                    )
+                )
+                todo.toDoCalendarMonth = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_CALENDAR_MONTH
+                    )
+                )
+                todo.toDoCalendarDay = queryResult.getString(
+                    queryResult.getColumnIndex(
+                        COL_TODO_CALENDAR_DAY
+                    )
+                )
+                result.add(todo)
+            } while (queryResult.moveToNext())
+        }
+
+        queryResult.close()
+        return result
+    }
+
     fun updateToDoItem(item: ToDoItem) {
         val db = writableDatabase
         val cv = ContentValues()
@@ -306,56 +361,22 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         cv.put(COL_TODO_ITEM_CALENDAR_YEAR, item.toDoItemCalendarYear)
         cv.put(COL_TODO_ITEM_CALENDAR_MONTH, item.toDoItemCalendarMonth)
         cv.put(COL_TODO_ITEM_CALENDAR_DAY, item.toDoItemCalendarDay)
+        cv.put(COL_IS_DELETED, item.isDeleted)
         db.update(TABLE_TODO_ITEM, cv, "$COL_ID=?", arrayOf(item.id.toString()))
     }
 
-    fun deleteToDoItem(itemId: Long) {
+    fun deleteToDoItem(item: ToDoItem) {
         val db = writableDatabase
-        db.delete(TABLE_TODO_ITEM, "$COL_ID=?", arrayOf(itemId.toString()))
-//        val queryResult =
-//            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_TODO_ID=$itemId", null)
-//
-//        if (queryResult.moveToFirst()) {
-//            do {
-//                val item = ToDoItem()
-//                item.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
-//                item.toDoId = queryResult.getLong(queryResult.getColumnIndex(COL_TODO_ID))
-//                item.itemName = queryResult.getString(queryResult.getColumnIndex(COL_ITEM_NAME))
-//                item.toDoItemAlarmHour = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ITEM_ALARM_HOUR
-//                    )
-//                )
-//                item.toDoItemAlarmMinutes = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ITEM_ALARM_MINUTE
-//                    )
-//                )
-//                item.toDoItemCalendarYear = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ITEM_CALENDAR_YEAR
-//                    )
-//                )
-//                item.toDoItemCalendarMonth = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ITEM_CALENDAR_MONTH
-//                    )
-//                )
-//                item.toDoItemCalendarDay = queryResult.getString(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ITEM_CALENDAR_DAY
-//                    )
-//                )
-//                item.isCompleted = queryResult.getInt(
-//                    queryResult.getColumnIndex(
-//                        COL_TODO_ITEM_CALENDAR_DAY
-//                    )
-//                ) == 1
-//                item.isDeleted = true
-//                updateToDoItem(item)
-//            } while (queryResult.moveToNext())
-//        }
-//
-//        queryResult.close()
+        val cv = ContentValues()
+        cv.put(COL_ITEM_NAME, item.itemName)
+        cv.put(COL_TODO_ID, item.toDoId)
+        cv.put(COL_IS_COMPLETED, item.isCompleted)
+        cv.put(COL_TODO_ITEM_ALARM_HOUR, item.toDoItemAlarmHour)
+        cv.put(COL_TODO_ITEM_ALARM_MINUTE, item.toDoItemAlarmMinutes)
+        cv.put(COL_TODO_ITEM_CALENDAR_YEAR, item.toDoItemCalendarYear)
+        cv.put(COL_TODO_ITEM_CALENDAR_MONTH, item.toDoItemCalendarMonth)
+        cv.put(COL_TODO_ITEM_CALENDAR_DAY, item.toDoItemCalendarDay)
+        cv.put(COL_IS_DELETED, item.isDeleted)
+        db.update(TABLE_TODO_ITEM, cv, "$COL_ID=?", arrayOf(item.id.toString()))
     }
 }

@@ -51,6 +51,19 @@ class DashBoardActivity : AppCompatActivity() {
         arrayAdapter = ArrayAdapter(this, R.layout.mylist, listItems)
         mlist.adapter = arrayAdapter
 
+        //Del-list
+        // ListViewを作成
+        val deletedarrayAdapter: ArrayAdapter<*>
+        val getDeletedList = DeletedList()
+        val deletedListView = findViewById<ListView>(R.id.lv_deleted_task)
+        val deletedItems = arrayOfNulls<String>(getDeletedList.size)
+        for (j in 0 until getDeletedList.size) {
+            val delitem = getDeletedList[j]
+            deletedItems[j] = delitem.name
+        }
+        deletedarrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, deletedItems)
+        deletedListView.adapter = deletedarrayAdapter
+        //Del-list complete
         fab_dashboard.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
             dialog.setTitle(resources.getString(R.string.add_toDo))
@@ -105,6 +118,7 @@ class DashBoardActivity : AppCompatActivity() {
                 toDo.toDoCalendarYear = alarmYear
                 toDo.toDoCalendarMonth = alarmMonth
                 toDo.toDoCalendarDay = alarmDay
+                toDo.isDeleted = false
                 Toast.makeText(
                     applicationContext,
                     "alarm Hour $alarmHour + alarm Minutes $alarmMinute",
@@ -171,6 +185,7 @@ class DashBoardActivity : AppCompatActivity() {
                 toDo.toDoCalendarYear = alarmYear
                 toDo.toDoCalendarMonth = alarmMonth
                 toDo.toDoCalendarDay = alarmDay
+                toDo.isDeleted = false
                 dbHandler.updateToDo(toDo)
                 Toast.makeText(this, resources.getString(R.string.update_toDo), Toast.LENGTH_SHORT)
                     .show()
@@ -181,6 +196,14 @@ class DashBoardActivity : AppCompatActivity() {
 
         }
         dialog.show()
+    }
+
+    fun deleteToDo(toDo: ToDo) {
+        toDo.isDeleted = true
+        dbHandler.deleteToDo(toDo)
+        Toast.makeText(this, resources.getString(R.string.delete_todo), Toast.LENGTH_SHORT)
+            .show()
+        refreshList()
     }
 
     fun setAlarm(targetCal: Calendar) {
@@ -233,6 +256,12 @@ class DashBoardActivity : AppCompatActivity() {
     fun CompletedList(): MutableList<ToDoItem> {
         var listA = dbHandler.getToDoItemsCompleted()
         return listA
+    }
+
+
+    fun DeletedList(): MutableList<ToDo> {
+        var listB = dbHandler.getToDoItemDeleted()
+        return listB
     }
 
 
@@ -292,7 +321,7 @@ class DashBoardActivity : AppCompatActivity() {
                             dialog.setTitle(activity.resources.getString(R.string.confirm))
                             dialog.setMessage(activity.resources.getString(R.string.do_you_delete))
                             dialog.setPositiveButton(activity.resources.getString(R.string.continue_task)) { _: DialogInterface?, _: Int ->
-                                activity.dbHandler.deleteToDo(list[p1].id)
+                                activity.deleteToDo(list[p1])
                                 activity.refreshList()
                             }
                             dialog.setNegativeButton(activity.resources.getString(R.string.cancel)) { _: DialogInterface?, _: Int ->

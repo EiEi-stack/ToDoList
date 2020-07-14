@@ -26,5 +26,6 @@
     <string name="add_todo_item">ToDoアイテムを追加</string>
     <string name="update_todo_item">ToDoアイテムを更新</string>
     <string name="update_completed">ToDoアイテムを更新完了</string>
-
+    <string name="delete_todo">ToDoの削除が完了しました</string>
+    <string name="deleted_task">削除したタスク</string>
 </resources>

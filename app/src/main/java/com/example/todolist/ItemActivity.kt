@@ -93,6 +93,7 @@ class ItemActivity : AppCompatActivity() {
                     item.toDoItemCalendarYear = alarmYear
                     item.toDoItemCalendarMonth = alarmMonth
                     item.toDoItemCalendarDay = alarmDay
+                    item.isDeleted = false
                     Toast.makeText(
                         applicationContext,
                         "Add item $alarmHour + $alarmMinute",
@@ -167,6 +168,7 @@ class ItemActivity : AppCompatActivity() {
                 item.toDoItemCalendarYear = alarmYear
                 item.toDoItemCalendarMonth = alarmMonth
                 item.toDoItemCalendarDay = alarmDay
+                item.isDeleted = false
                 dbHandler.updateToDoItem(item)
                 Toast.makeText(this, resources.getString(R.string.update_completed), Toast.LENGTH_SHORT).show()
                 refreshList()
@@ -177,6 +179,44 @@ class ItemActivity : AppCompatActivity() {
 
         }
         dialog.show()
+    }
+    fun deleteToDoItem(item: ToDoItem) {
+//        val dialog = AlertDialog.Builder(this)
+//        dialog.setTitle(resources.getString(R.string.update_todo_item))
+//        val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
+//        val toDoName = view.findViewById<EditText>(R.id.ev_todo)
+//        val pickerDate = view.findViewById<DatePicker>(R.id.pickerdate)
+//        val pickerTime = view.findViewById<TimePicker>(R.id.pickertime)
+//        toDoName.setText(item.itemName)
+////        pickerTime.hour(item.toDoItemAlarmHour)
+////        pickerTime.minute(item.toDoItemAlarmMinutes)
+//        dialog.setView(view)
+//        dialog.setPositiveButton(resources.getString(R.string.update)) { _: DialogInterface, _: Int ->
+//            if (toDoName.text.isNotEmpty()) {
+//                val alarmHour = pickerTime.currentHour.toString()
+//                val alarmMinute = pickerTime.currentMinute.toString()
+//                val alarmYear = pickerDate.year.toString()
+//                val alarmMonth = pickerDate.month.toString()
+//                val alarmDay = pickerDate.dayOfMonth.toString()
+//                item.itemName = toDoName.text.toString()
+//                item.toDoId = todoId
+//                item.isCompleted = false
+//                item.toDoItemAlarmHour = alarmHour
+//                item.toDoItemAlarmMinutes = alarmMinute
+//                item.toDoItemCalendarYear = alarmYear
+//                item.toDoItemCalendarMonth = alarmMonth
+//                item.toDoItemCalendarDay = alarmDay
+                item.isDeleted = true
+                dbHandler.deleteToDoItem(item)
+                Toast.makeText(this, resources.getString(R.string.delete_todo), Toast.LENGTH_SHORT).show()
+                refreshList()
+//            }
+//            Log.d(TAG, "Update item")
+//        }
+//        dialog.setNegativeButton(resources.getString(R.string.cancel)) { _: DialogInterface, _: Int ->
+//
+//        }
+//        dialog.show()
     }
 
     override fun onResume() {
@@ -236,7 +276,7 @@ class ItemActivity : AppCompatActivity() {
                 dialog.setTitle(activity.resources.getString(R.string.confirm))
                 dialog.setMessage(activity.resources.getString(R.string.do_you_delete))
                 dialog.setPositiveButton(activity.resources.getString(R.string.continue_task)) { _: DialogInterface?, _: Int ->
-                    activity.dbHandler.deleteToDoItem(list[p1].id)
+                    activity.deleteToDoItem(list[p1])
                     activity.refreshList()
                 }
                 dialog.setNegativeButton(activity.resources.getString(R.string.cancel)) { _: DialogInterface?, _: Int ->

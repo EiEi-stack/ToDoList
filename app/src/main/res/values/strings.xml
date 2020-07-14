@@ -25,5 +25,6 @@
     <string name="add_todo_item">Add ToDoItem</string>
     <string name="update_todo_item">Update ToDoItem</string>
     <string name="update_completed">Update ToDoItem Completed</string>
-
+    <string name="delete_todo">Delete ToDo Completed</string>
+    <string name="deleted_task">Deleted Tasks</string>
 </resources>
