@@ -5,5 +5,4 @@
     Android:layout_height="wrap_content"
     Android:foreground="@drawable/strikethrough_foreground"
     Android:paddingTop="2dip"
-    Android:text="@string/completedTask"
     Android:paddingBottom="2dip" />

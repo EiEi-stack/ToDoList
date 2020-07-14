@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ToDoリスト</string>
-    <string name="ab_dashboard">ダッシュボード</string>
+    <string name="dashboard">ダッシュボード</string>
     <string name="edit">編集</string>
     <string name="delete">削除</string>
     <string name="btn_setAlarm">目覚ましを設定する</string>
     <string name="mark_as_completed">完了としてマーク</string>
     <string name="reset">リセット</string>
-    <string name="completedTask">完了したタスク</string>
+    <string name="completed_task">完了したタスク</string>
     <string name="defaultTime">00:00</string>
     <string name="english">英語</string>
     <string name="japanese">日本語</string>
+    <string name="add_toDo">ToDoを追加</string>
+    <string name="invalid_datetime">日時無効</string>
+    <string name="add">追加</string>
+    <string name="cancel">キャンセル</string>
+    <string name="update_toDo">ToDoを更新</string>
+    <string name="update">更新</string>
+    <string name="completed_alarm">アラーム設定完了</string>
+    <string name="time_AM">午前</string>
+    <string name="time_PM">午後</string>
+    <string name="confirm">確認</string>
+    <string name="do_you_delete">タスクを削除しますか？</string>
+    <string name="continue_task">続く</string>
+    <string name="add_todo_item">ToDoアイテムを追加</string>
+    <string name="update_todo_item">ToDoアイテムを更新</string>
+    <string name="update_completed">ToDoアイテムを更新完了</string>
+
 </resources>

@@ -1,13 +1,29 @@
 <resources>
     <string name="app_name">ToDoList</string>
-    <string name="ab_dashboard">Dashboard</string>
+    <string name="dashboard">Dashboard</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="btn_setAlarm">SET ALARM</string>
     <string name="mark_as_completed">Mark as completed</string>
     <string name="reset">Reset</string>
-    <string name="completedTask">Completed Tasks</string>
+    <string name="completed_task">Completed Tasks</string>
     <string name="defaultTime">00:00</string>
     <string name="english">English</string>
     <string name="japanese">Japanese</string>
+    <string name="add_toDo">Add ToDo</string>
+    <string name="invalid_datetime">Invalid DateTime</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="update_toDo">Update ToDo</string>
+    <string name="update">Update</string>
+    <string name="completed_alarm">Alarm Setting Completed</string>
+    <string name="time_AM">AM</string>
+    <string name="time_PM">PM</string>
+    <string name="confirm">Confirm</string>
+    <string name="do_you_delete">Do you want to delete this task?</string>
+    <string name="continue_task">Continue</string>
+    <string name="add_todo_item">Add ToDoItem</string>
+    <string name="update_todo_item">Update ToDoItem</string>
+    <string name="update_completed">Update ToDoItem Completed</string>
+
 </resources>

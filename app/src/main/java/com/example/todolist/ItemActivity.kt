@@ -44,7 +44,7 @@ class ItemActivity : AppCompatActivity() {
 
         fab_item.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
-            dialog.setTitle("Add ToDoItem")
+            dialog.setTitle(resources.getString(R.string.add_todo_item))
             val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
             val toDoName = view.findViewById<EditText>(R.id.ev_todo)
             val pickerDate = view.findViewById<DatePicker>(R.id.pickerdate)
@@ -70,14 +70,14 @@ class ItemActivity : AppCompatActivity() {
                 }
                 if (cal.compareTo(current) <= 0) {
                     //The set Date/Time is already passed
-                    Toast.makeText(applicationContext, "Invalid DateTime", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, resources.getString(R.string.invalid_datetime), Toast.LENGTH_LONG)
                         .show()
                 } else {
                     setAlarm(cal)
                 }
             }
             dialog.setView(view)
-            dialog.setPositiveButton("Add") { _: DialogInterface, _: Int ->
+            dialog.setPositiveButton(resources.getString(R.string.add)) { _: DialogInterface, _: Int ->
                 if (toDoName.text.isNotEmpty()) {
                     val alarmHour = alarmItemCalendar.get(Calendar.HOUR_OF_DAY).toString()
                     val alarmMinute = alarmItemCalendar.get(Calendar.MINUTE).toString()
@@ -103,7 +103,7 @@ class ItemActivity : AppCompatActivity() {
                 }
                 Log.d(TAG, "add item")
             }
-            dialog.setNegativeButton("Cancel") { _: DialogInterface, _: Int ->
+            dialog.setNegativeButton(resources.getString(R.string.cancel)) { _: DialogInterface, _: Int ->
 
             }
             dialog.show()
@@ -138,21 +138,21 @@ class ItemActivity : AppCompatActivity() {
             getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.RTC_WAKEUP, targetCal.timeInMillis] = pendingIntent
         alarmItemCalendar = targetCal
-        Toast.makeText(this, "Alaram setting completed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, resources.getString(R.string.completed_alarm), Toast.LENGTH_SHORT).show()
     }
 
     fun updateItem(item: ToDoItem) {
         val dialog = AlertDialog.Builder(this)
-        dialog.setTitle("Update ToDoItem")
+        dialog.setTitle(resources.getString(R.string.update_todo_item))
         val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
         val toDoName = view.findViewById<EditText>(R.id.ev_todo)
         val pickerDate = view.findViewById<DatePicker>(R.id.pickerdate)
         val pickerTime = view.findViewById<TimePicker>(R.id.pickertime)
         toDoName.setText(item.itemName)
-        pickerTime.hour(item.toDoItemAlarmHour)
-        pickerTime.minute(item.toDoItemAlarmMinutes)
+//        pickerTime.hour(item.toDoItemAlarmHour)
+//        pickerTime.minute(item.toDoItemAlarmMinutes)
         dialog.setView(view)
-        dialog.setPositiveButton("Update") { _: DialogInterface, _: Int ->
+        dialog.setPositiveButton(resources.getString(R.string.update)) { _: DialogInterface, _: Int ->
             if (toDoName.text.isNotEmpty()) {
                 val alarmHour = pickerTime.currentHour.toString()
                 val alarmMinute = pickerTime.currentMinute.toString()
@@ -168,12 +168,12 @@ class ItemActivity : AppCompatActivity() {
                 item.toDoItemCalendarMonth = alarmMonth
                 item.toDoItemCalendarDay = alarmDay
                 dbHandler.updateToDoItem(item)
-                Toast.makeText(this, "Updated Task Item", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, resources.getString(R.string.update_completed), Toast.LENGTH_SHORT).show()
                 refreshList()
             }
             Log.d(TAG, "Update item")
         }
-        dialog.setNegativeButton("Cancel") { _: DialogInterface, _: Int ->
+        dialog.setNegativeButton(resources.getString(R.string.cancel)) { _: DialogInterface, _: Int ->
 
         }
         dialog.show()
@@ -218,9 +218,9 @@ class ItemActivity : AppCompatActivity() {
                 alarmMinutes = list[p1].toDoItemAlarmMinutes.toString()
             }
             if (list[p1].toDoItemAlarmHour != null && list[p1].toDoItemAlarmHour.toInt() > 12) {
-                setAlarmTime = list[p1].toDoItemAlarmHour + ":" + alarmMinutes + " PM"
+                setAlarmTime = list[p1].toDoItemAlarmHour + ":" + alarmMinutes + " "+activity.resources.getString(R.string.time_PM)
             } else {
-                setAlarmTime = list[p1].toDoItemAlarmHour + ":" + alarmMinutes + " AM"
+                setAlarmTime = list[p1].toDoItemAlarmHour + ":" + alarmMinutes +" "+activity.resources.getString(R.string.time_AM)
             }
             holder.toDoItemAlarm.text = setAlarmTime
             holder.itemName.text = list[p1].itemName
@@ -233,13 +233,13 @@ class ItemActivity : AppCompatActivity() {
             }
             holder.delete.setOnClickListener {
                 val dialog = AlertDialog.Builder(activity)
-                dialog.setTitle("Confirm")
-                dialog.setMessage("Do you want to delete this Item?")
-                dialog.setPositiveButton("Continue") { _: DialogInterface?, _: Int ->
+                dialog.setTitle(activity.resources.getString(R.string.confirm))
+                dialog.setMessage(activity.resources.getString(R.string.do_you_delete))
+                dialog.setPositiveButton(activity.resources.getString(R.string.continue_task)) { _: DialogInterface?, _: Int ->
                     activity.dbHandler.deleteToDoItem(list[p1].id)
                     activity.refreshList()
                 }
-                dialog.setNegativeButton("Cancel") { _: DialogInterface?, _: Int ->
+                dialog.setNegativeButton(activity.resources.getString(R.string.cancel)) { _: DialogInterface?, _: Int ->
                 }
                 dialog.show()
             }

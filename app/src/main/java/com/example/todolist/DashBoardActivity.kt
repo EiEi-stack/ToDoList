@@ -7,17 +7,16 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.recreate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.DTO.ToDo
@@ -28,6 +27,8 @@ import java.util.*
 class DashBoardActivity : AppCompatActivity() {
     lateinit var alarmCalendar: Calendar
     lateinit var dbHandler: DBHandler
+
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board)
@@ -52,13 +53,14 @@ class DashBoardActivity : AppCompatActivity() {
 
         fab_dashboard.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
-            dialog.setTitle("Add ToDo")
+            dialog.setTitle(resources.getString(R.string.add_toDo))
             val view: View = layoutInflater.inflate(R.layout.dialog_dashboard, null)
             val toDoName = view.findViewById<EditText>(R.id.ev_todo)
             val pickerDate = view.findViewById<DatePicker>(R.id.pickerdate)
             val pickerTime = view.findViewById<TimePicker>(R.id.pickertime)
             val buttonSetAlarm = view.findViewById<Button>(R.id.setalarm)
             val now = Calendar.getInstance()
+
             pickerDate.init(
                 now[Calendar.YEAR],
                 now[Calendar.MONTH],
@@ -78,43 +80,42 @@ class DashBoardActivity : AppCompatActivity() {
                 }
                 if (cal.compareTo(current) <= 0) {
                     //The set Date/Time is already passed
-                    Toast.makeText(applicationContext, "Invalid DateTime", Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        applicationContext,
+                        resources.getString(R.string.invalid_datetime),
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 } else {
                     setAlarm(cal)
                 }
             }
             dialog.setView(view)
-            dialog.setPositiveButton("Add") { _: DialogInterface, _: Int ->
-                if (toDoName.text.isEmpty()) {
-                    val dialog = AlertDialog.Builder(this)
-                    dialog.setTitle("Warning")
-                    dialog.setMessage("Please enter the Task Title")
-                    dialog.show()
-                } else {
-                    val toDo = ToDo()
-                    toDo.name = toDoName.text.toString()
-                    val alarmHour = alarmCalendar.get(Calendar.HOUR_OF_DAY).toString()
-                    val alarmMinute = alarmCalendar.get(Calendar.MINUTE).toString()
-                    val alarmYear = alarmCalendar.get(Calendar.YEAR).toString()
-                    val alarmMonth = alarmCalendar.get(Calendar.MONTH).toString()
-                    val alarmDay = alarmCalendar.get(Calendar.DAY_OF_MONTH).toString()
-                    toDo.toDoAlarmHour = alarmHour
-                    toDo.toDoAlarmMinutes = alarmMinute
-                    toDo.toDoCalendarYear = alarmYear
-                    toDo.toDoCalendarMonth = alarmMonth
-                    toDo.toDoCalendarDay = alarmDay
-                    Toast.makeText(
-                        applicationContext,
-                        "alarm Hour $alarmHour + alarm Minutes $alarmMinute",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    dbHandler.addToDo(toDo)
-                    refreshList()
-                }
+            dialog.setPositiveButton(resources.getString(R.string.add)) { _: DialogInterface, _: Int ->
+
+                val toDo = ToDo()
+                toDo.name = toDoName.text.toString()
+                val alarmHour = alarmCalendar.get(Calendar.HOUR_OF_DAY).toString()
+                val alarmMinute = alarmCalendar.get(Calendar.MINUTE).toString()
+                val alarmYear = alarmCalendar.get(Calendar.YEAR).toString()
+                val alarmMonth = alarmCalendar.get(Calendar.MONTH).toString()
+                val alarmDay = alarmCalendar.get(Calendar.DAY_OF_MONTH).toString()
+                toDo.toDoAlarmHour = alarmHour
+                toDo.toDoAlarmMinutes = alarmMinute
+                toDo.toDoCalendarYear = alarmYear
+                toDo.toDoCalendarMonth = alarmMonth
+                toDo.toDoCalendarDay = alarmDay
+                Toast.makeText(
+                    applicationContext,
+                    "alarm Hour $alarmHour + alarm Minutes $alarmMinute",
+                    Toast.LENGTH_LONG
+                ).show()
+                dbHandler.addToDo(toDo)
+                refreshList()
+
 
             }
-            dialog.setNegativeButton("Cancel") { _: DialogInterface, _: Int ->
+            dialog.setNegativeButton(resources.getString(R.string.cancel)) { _: DialogInterface, _: Int ->
 
             }
             dialog.show()
@@ -123,14 +124,31 @@ class DashBoardActivity : AppCompatActivity() {
 
     fun updateToDo(toDo: ToDo) {
         val dialog = AlertDialog.Builder(this)
-        dialog.setTitle("Update ToDo")
+        dialog.setTitle(resources.getString(R.string.update_toDo))
         val view: View = layoutInflater.inflate(R.layout.dialog_dashboard, null)
         val toDoName = view.findViewById<EditText>(R.id.ev_todo)
         val pickerDate = view.findViewById<DatePicker>(R.id.pickerdate)
         val pickerTime = view.findViewById<TimePicker>(R.id.pickertime)
         toDoName.setText(toDo.name)
-        pickerTime.hour(toDo.toDoAlarmHour)
-        pickerTime.minute(toDo.toDoAlarmMinutes)
+        pickerTime.currentHour(7)
+        pickerTime.currentMinute(3)
+        if (toDo.toDoCalendarYear.isNotEmpty()) {
+            pickerDate.init(
+                toDo.toDoCalendarYear.toInt(),
+                toDo.toDoCalendarMonth.toInt(),
+                toDo.toDoCalendarDay.toInt(),
+                null
+            )
+        } else {
+            val now = Calendar.getInstance()
+            pickerDate.init(
+                now[Calendar.YEAR],
+                now[Calendar.MONTH],
+                now[Calendar.DAY_OF_MONTH],
+                null
+            )
+
+        }
         val malarmHour = toDo.toDoAlarmHour
         val malarmMinute = toDo.toDoAlarmMinutes
         Toast.makeText(
@@ -140,7 +158,7 @@ class DashBoardActivity : AppCompatActivity() {
         ).show()
         dialog.setView(view)
 
-        dialog.setPositiveButton("Update") { _: DialogInterface, _: Int ->
+        dialog.setPositiveButton(resources.getString(R.string.update)) { _: DialogInterface, _: Int ->
             if (toDoName.text.isNotEmpty()) {
                 toDo.name = toDoName.text.toString()
                 val alarmHour = pickerTime.currentHour.toString()
@@ -154,11 +172,12 @@ class DashBoardActivity : AppCompatActivity() {
                 toDo.toDoCalendarMonth = alarmMonth
                 toDo.toDoCalendarDay = alarmDay
                 dbHandler.updateToDo(toDo)
-                Toast.makeText(this, "Updated Task", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, resources.getString(R.string.update_toDo), Toast.LENGTH_SHORT)
+                    .show()
                 refreshList()
             }
         }
-        dialog.setNegativeButton("Cancel") { _: DialogInterface, _: Int ->
+        dialog.setNegativeButton(resources.getString(R.string.cancel)) { _: DialogInterface, _: Int ->
 
         }
         dialog.show()
@@ -172,7 +191,8 @@ class DashBoardActivity : AppCompatActivity() {
             getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.RTC_WAKEUP, targetCal.timeInMillis] = pendingIntent
         alarmCalendar = targetCal
-        Toast.makeText(this, "Alarm setting completed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, resources.getString(R.string.completed_alarm), Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onResume() {
@@ -190,20 +210,20 @@ class DashBoardActivity : AppCompatActivity() {
         dbHandler.getToDo()
     }
 
-    private fun setLocate(Lang: String){
+    private fun setLocate(Lang: String) {
         val locale = Locale(Lang)
         Locale.setDefault(locale)
         val config = Configuration()
         config.locale = locale
-        baseContext.resources.updateConfiguration(config,baseContext.resources.displayMetrics)
-        val editor = getSharedPreferences("Setting",Context.MODE_PRIVATE).edit()
-        editor.putString("My_Lang",Lang)
+        baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
+        val editor = getSharedPreferences("Setting", Context.MODE_PRIVATE).edit()
+        editor.putString("My_Lang", Lang)
         editor.apply()
     }
 
-    private fun loadLocate(){
-        val sharePreferences = getSharedPreferences("Setting",Activity.MODE_PRIVATE)
-        val language = sharePreferences.getString("MY_Lang","")
+    private fun loadLocate() {
+        val sharePreferences = getSharedPreferences("Setting", Activity.MODE_PRIVATE)
+        val language = sharePreferences.getString("MY_Lang", "")
         if (language != null) {
             setLocate(language)
         }
@@ -238,10 +258,16 @@ class DashBoardActivity : AppCompatActivity() {
                 alarmMinutes = list[p1].toDoAlarmMinutes.toString()
             }
             if (list[p1].toDoAlarmHour != null && list[p1].toDoAlarmHour.toInt() > 12) {
-                setAlarmTime = list[p1].toDoAlarmHour + ":" + alarmMinutes + " PM"
+                setAlarmTime =
+                    list[p1].toDoAlarmHour + ":" + alarmMinutes + " " + activity.resources.getString(
+                        R.string.time_PM
+                    )
             } else {
 
-                setAlarmTime = list[p1].toDoAlarmHour + ":" + alarmMinutes + " AM"
+                setAlarmTime =
+                    list[p1].toDoAlarmHour + ":" + alarmMinutes + " " + activity.resources.getString(
+                        R.string.time_AM
+                    )
             }
             Log.d("--Show on View", list[p1].toDoAlarmHour)
             holder.todoAlarm.text = setAlarmTime
@@ -263,13 +289,13 @@ class DashBoardActivity : AppCompatActivity() {
                         }
                         R.id.menu_delete -> {
                             val dialog = AlertDialog.Builder(activity)
-                            dialog.setTitle("Confirm")
-                            dialog.setMessage("Do you want to delete this task?")
-                            dialog.setPositiveButton("Continue") { _: DialogInterface?, _: Int ->
+                            dialog.setTitle(activity.resources.getString(R.string.confirm))
+                            dialog.setMessage(activity.resources.getString(R.string.do_you_delete))
+                            dialog.setPositiveButton(activity.resources.getString(R.string.continue_task)) { _: DialogInterface?, _: Int ->
                                 activity.dbHandler.deleteToDo(list[p1].id)
                                 activity.refreshList()
                             }
-                            dialog.setNegativeButton("Cancel") { _: DialogInterface?, _: Int ->
+                            dialog.setNegativeButton(activity.resources.getString(R.string.cancel)) { _: DialogInterface?, _: Int ->
                             }
                             dialog.show()
                         }
@@ -305,7 +331,11 @@ class DashBoardActivity : AppCompatActivity() {
     }
 }
 
-operator fun Int.invoke(alarmHour: String) {
+private operator fun CharSequence?.invoke(string: String) {
+
+}
+
+operator fun Int.invoke(alarmHour: Int) {
 
 }
 

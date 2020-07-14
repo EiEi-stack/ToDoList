@@ -9,10 +9,10 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/dashboard_toolbar"
         android:layout_width="match_parent"
-        app:title="@string/ab_dashboard"
         android:layout_height="?android:actionBarSize"
         android:background="@color/colorPrimaryDark"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="@string/dashboard" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_dashboard"
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/rv_dashboard"
-            android:text="@string/completedTask"
+            android:text="@string/completed_task"
             android:textSize="15sp"
             android:textStyle="bold" />
 
