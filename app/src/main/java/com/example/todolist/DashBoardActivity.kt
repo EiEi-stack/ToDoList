@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -43,26 +44,38 @@ class DashBoardActivity : AppCompatActivity() {
         val arrayAdapter: ArrayAdapter<*>
         val users = CompletedList()
         val mlist = findViewById<ListView>(R.id.lv_completedTask)
+        val completedTextView = findViewById<TextView>(R.id.tv_completed_task)
         val listItems = arrayOfNulls<String>(users.size)
         for (i in 0 until users.size) {
             val listData = users[i]
             listItems[i] = listData.itemName
         }
-        arrayAdapter = ArrayAdapter(this, R.layout.mylist, listItems)
-        mlist.adapter = arrayAdapter
+        if (users.size != 0) {
+            arrayAdapter = ArrayAdapter(this, R.layout.mylist, listItems)
+            mlist.adapter = arrayAdapter
+        } else {
+            completedTextView.visibility = View.GONE
+        }
 
         //Del-list
         // ListViewを作成
         val deletedarrayAdapter: ArrayAdapter<*>
         val getDeletedList = DeletedList()
         val deletedListView = findViewById<ListView>(R.id.lv_deleted_task)
+        val deletedTextView = findViewById<TextView>(R.id.tv_deleted_task)
         val deletedItems = arrayOfNulls<String>(getDeletedList.size)
         for (j in 0 until getDeletedList.size) {
             val delitem = getDeletedList[j]
             deletedItems[j] = delitem.name
         }
-        deletedarrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, deletedItems)
-        deletedListView.adapter = deletedarrayAdapter
+        if (getDeletedList.size != 0) {
+            deletedarrayAdapter =
+                ArrayAdapter(this, android.R.layout.simple_list_item_1, deletedItems)
+            deletedListView.adapter = deletedarrayAdapter
+        } else {
+            deletedTextView.visibility = View.GONE
+        }
+
         //Del-list complete
         fab_dashboard.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
