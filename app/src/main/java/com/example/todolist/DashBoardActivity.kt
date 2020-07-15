@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
-import android.opengl.Visibility
+import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,59 +24,28 @@ import com.example.todolist.DTO.ToDo
 import com.example.todolist.DTO.ToDoItem
 import kotlinx.android.synthetic.main.activity_dash_board.*
 import java.util.*
+import android.widget.ArrayAdapter as ArrayAdapter1
 
 class DashBoardActivity : AppCompatActivity() {
     lateinit var alarmCalendar: Calendar
     lateinit var dbHandler: DBHandler
-
-    @RequiresApi(Build.VERSION_CODES.N)
+    lateinit var getCompletedList: MutableList<ToDoItem>
+    lateinit var completedArrayAdapter: ArrayAdapter1<String?>
+    lateinit var completedListView: ListView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board)
-
         loadLocate() //Call LoadLocale
 
         setSupportActionBar(dashboard_toolbar)
         alarmCalendar = Calendar.getInstance()
         dbHandler = DBHandler(this)
+        getCompletedList = CompletedList()
+        completedListView = findViewById<ListView>(R.id.lv_completedTask)
         rv_dashboard.layoutManager = LinearLayoutManager(this)
-        // ListViewを作成
-        val arrayAdapter: ArrayAdapter<*>
-        val users = CompletedList()
-        val mlist = findViewById<ListView>(R.id.lv_completedTask)
-        val completedTextView = findViewById<TextView>(R.id.tv_completed_task)
-        val listItems = arrayOfNulls<String>(users.size)
-        for (i in 0 until users.size) {
-            val listData = users[i]
-            listItems[i] = listData.itemName
-        }
-        if (users.size != 0) {
-            arrayAdapter = ArrayAdapter(this, R.layout.mylist, listItems)
-            mlist.adapter = arrayAdapter
-        } else {
-            completedTextView.visibility = View.GONE
-        }
+        setcompletedListView()
+        setdeletedListView()
 
-        //Del-list
-        // ListViewを作成
-        val deletedarrayAdapter: ArrayAdapter<*>
-        val getDeletedList = DeletedList()
-        val deletedListView = findViewById<ListView>(R.id.lv_deleted_task)
-        val deletedTextView = findViewById<TextView>(R.id.tv_deleted_task)
-        val deletedItems = arrayOfNulls<String>(getDeletedList.size)
-        for (j in 0 until getDeletedList.size) {
-            val delitem = getDeletedList[j]
-            deletedItems[j] = delitem.name
-        }
-        if (getDeletedList.size != 0) {
-            deletedarrayAdapter =
-                ArrayAdapter(this, android.R.layout.simple_list_item_1, deletedItems)
-            deletedListView.adapter = deletedarrayAdapter
-        } else {
-            deletedTextView.visibility = View.GONE
-        }
-
-        //Del-list complete
         fab_dashboard.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
             dialog.setTitle(resources.getString(R.string.add_toDo))
@@ -132,11 +101,6 @@ class DashBoardActivity : AppCompatActivity() {
                 toDo.toDoCalendarMonth = alarmMonth
                 toDo.toDoCalendarDay = alarmDay
                 toDo.isDeleted = false
-                Toast.makeText(
-                    applicationContext,
-                    "alarm Hour $alarmHour + alarm Minutes $alarmMinute",
-                    Toast.LENGTH_LONG
-                ).show()
                 dbHandler.addToDo(toDo)
                 refreshList()
 
@@ -176,13 +140,6 @@ class DashBoardActivity : AppCompatActivity() {
             )
 
         }
-        val malarmHour = toDo.toDoAlarmHour
-        val malarmMinute = toDo.toDoAlarmMinutes
-        Toast.makeText(
-            applicationContext,
-            "Hour is $malarmHour,Minute is $malarmMinute ",
-            Toast.LENGTH_LONG
-        ).show()
         dialog.setView(view)
 
         dialog.setPositiveButton(resources.getString(R.string.update)) { _: DialogInterface, _: Int ->
@@ -219,6 +176,53 @@ class DashBoardActivity : AppCompatActivity() {
         refreshList()
     }
 
+    fun CompletedList(): MutableList<ToDoItem> {
+        var listA = dbHandler.getToDoItemsCompleted()
+        return listA
+    }
+
+    fun DeletedList(): MutableList<ToDo> {
+        var listB = dbHandler.getToDoItemDeleted()
+        return listB
+    }
+
+    fun setcompletedListView() {
+        //listView
+        val completedTextView = findViewById<TextView>(R.id.tv_completed_task)
+        val listItems = arrayOfNulls<String>(getCompletedList.size)
+        for (i in 0 until getCompletedList.size) {
+            val listData = getCompletedList[i]
+            listItems[i] = listData.itemName
+        }
+        if (getCompletedList.size != 0) {
+            completedArrayAdapter = ArrayAdapter1(this, R.layout.mylist, listItems)
+            completedArrayAdapter.notifyDataSetChanged()
+            completedListView.adapter = completedArrayAdapter
+        } else {
+            completedTextView.visibility = View.GONE
+        }
+        //listViewCompleted
+    }
+
+    fun setdeletedListView() {
+        val deletedarrayAdapter: ArrayAdapter1<*>
+        val getDeletedList = DeletedList()
+        val deletedListView = findViewById<ListView>(R.id.lv_deleted_task)
+        val deletedTextView = findViewById<TextView>(R.id.tv_deleted_task)
+        val deletedItems = arrayOfNulls<String>(getDeletedList.size)
+        for (j in 0 until getDeletedList.size) {
+            val delitem = getDeletedList[j]
+            deletedItems[j] = delitem.name
+        }
+        if (getDeletedList.size != 0) {
+            deletedarrayAdapter =
+                ArrayAdapter1(this, android.R.layout.simple_list_item_1, deletedItems)
+            deletedListView.adapter = deletedarrayAdapter
+        } else {
+            deletedTextView.visibility = View.GONE
+        }
+    }
+
     fun setAlarm(targetCal: Calendar) {
         val intent = Intent(baseContext, AlarmReceiver::class.java)
         val pendingIntent =
@@ -233,17 +237,25 @@ class DashBoardActivity : AppCompatActivity() {
 
     override fun onResume() {
         refreshList()
-        super.onResume()
+        refreshListView()
         dbHandler.getToDo()
+        completedArrayAdapter.notifyDataSetChanged()
+        super.onResume()
     }
 
     private fun refreshList() {
         rv_dashboard.adapter = DashboardAdapter(this, dbHandler.getToDo())
     }
 
-
     private fun refreshListView() {
-        dbHandler.getToDo()
+        val listItems = arrayOfNulls<String>(getCompletedList.size)
+        for (i in 0 until getCompletedList.size) {
+            val listData = getCompletedList[i]
+            listItems[i] = listData.itemName
+        }
+        completedArrayAdapter = ArrayAdapter1(this, R.layout.mylist, listItems)
+        completedArrayAdapter.notifyDataSetChanged()
+
     }
 
     private fun setLocate(Lang: String) {
@@ -265,18 +277,6 @@ class DashBoardActivity : AppCompatActivity() {
         }
 
     }
-
-    fun CompletedList(): MutableList<ToDoItem> {
-        var listA = dbHandler.getToDoItemsCompleted()
-        return listA
-    }
-
-
-    fun DeletedList(): MutableList<ToDo> {
-        var listB = dbHandler.getToDoItemDeleted()
-        return listB
-    }
-
 
     class DashboardAdapter(val activity: DashBoardActivity, val list: MutableList<ToDo>) :
         RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
@@ -343,8 +343,8 @@ class DashBoardActivity : AppCompatActivity() {
                         }
                         R.id.menu_mark_as_completed -> {
                             activity.dbHandler.updateToDOItemCompletedStatus(list[p1].id, true)
-                            activity.refreshList()
                             activity.refreshListView()
+                            activity.refreshList()
                         }
                         R.id.menu_reset -> {
                             activity.dbHandler.updateToDOItemCompletedStatus(list[p1].id, false)
@@ -374,11 +374,9 @@ class DashBoardActivity : AppCompatActivity() {
 }
 
 private operator fun CharSequence?.invoke(string: String) {
-
 }
 
 operator fun Int.invoke(alarmHour: Int) {
-
 }
 
 

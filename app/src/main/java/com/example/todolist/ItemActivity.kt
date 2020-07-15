@@ -5,12 +5,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -94,11 +95,6 @@ class ItemActivity : AppCompatActivity() {
                     item.toDoItemCalendarMonth = alarmMonth
                     item.toDoItemCalendarDay = alarmDay
                     item.isDeleted = false
-                    Toast.makeText(
-                        applicationContext,
-                        "Add item $alarmHour + $alarmMinute",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     dbHandler.addToDoItem(item)
                     refreshList()
                 }
@@ -262,13 +258,18 @@ class ItemActivity : AppCompatActivity() {
             } else {
                 setAlarmTime = list[p1].toDoItemAlarmHour + ":" + alarmMinutes +" "+activity.resources.getString(R.string.time_AM)
             }
-            holder.toDoItemAlarm.text = setAlarmTime
-            holder.itemName.text = list[p1].itemName
-            holder.itemName.isChecked = list[p1].isCompleted
-            holder.itemName.setOnClickListener {
+            holder.tvDoItemAlarm.text = setAlarmTime
+            holder.tvToDoItemText.text = list[p1].itemName
+            holder.checkBoxItem.isChecked = list[p1].isCompleted
+            holder.checkBoxItem.setOnClickListener {
                 list[p1].isCompleted = !list[p1].isCompleted
                 activity.dbHandler.updateToDoItem(list[p1])
-
+                if(holder.checkBoxItem.isChecked){
+                    holder.tvToDoItemText.setPaintFlags(holder.tvToDoItemText.getPaintFlags() or Paint.STRIKE_THRU_TEXT_FLAG)
+                }
+                else{
+                    holder.tvToDoItemText.setPaintFlags(holder.tvToDoItemText.getPaintFlags() and Paint.STRIKE_THRU_TEXT_FLAG.inv())
+                }
                 Log.d(TAG, "Bind ViewHolder")
             }
             holder.delete.setOnClickListener {
@@ -296,11 +297,12 @@ class ItemActivity : AppCompatActivity() {
         }
 
         class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-            val itemName: CheckBox = v.findViewById(R.id.cb_item)
+            val checkBoxItem: CheckBox = v.findViewById(R.id.cb_item)
             val edit: ImageView = v.findViewById(R.id.iv_edit)
             val delete: ImageView = v.findViewById(R.id.iv_delete)
             val move: ImageView = v.findViewById(R.id.iv_move)
-            val toDoItemAlarm: TextView = v.findViewById(R.id.tv_todo_item_alarm)
+            val tvDoItemAlarm: TextView = v.findViewById(R.id.tv_todo_item_alarm)
+            val tvToDoItemText: TextView = v.findViewById(R.id.tv_todo_item_text)
         }
     }
 

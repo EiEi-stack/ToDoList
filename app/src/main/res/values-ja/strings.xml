@@ -9,6 +9,7 @@
     <string name="reset">リセット</string>
     <string name="completed_task">完了したタスク</string>
     <string name="defaultTime">00:00</string>
+    <string name="defaultText">text</string>
     <string name="english">英語</string>
     <string name="japanese">日本語</string>
     <string name="add_toDo">ToDoを追加</string>

@@ -5,12 +5,18 @@
 
     <CheckBox
         android:id="@+id/cb_item"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/iv_edit"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp" />
+    <TextView
+        android:id="@+id/tv_todo_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/cb_item"
         android:layout_toLeftOf="@id/iv_edit"
-        android:padding="16dp" />
-
+        android:text="@string/defaultTime"
+        android:padding="16dp"/>
     <ImageView
         android:id="@+id/iv_edit"
         android:layout_width="48dp"
